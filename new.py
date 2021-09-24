@@ -5,28 +5,19 @@ from openpyxl.workbook import Workbook
 df = pd.read_csv('investigados.csv', sep=';', index_col=[0])
 
 columns = list(df.columns)
-emptyColumns = columns[len(columns)-2:]
-print(emptyColumns)
 partidos = columns[0:len(columns)-2]
 
-colunasVazias = [(len(partidos)+1), (len(partidos)+2)]
-# colunaVazia1 = (len(partidos)+1)
-# colunaVazia2 = (len(partidos)+2)
-
-for colunaVazia in colunasVazias:
-	df.drop (["Unnamed: "+colunaVazia], axis=1, inplace=True)
-# df.drop (["Unnamed: "+str(colunaVazia2)], axis=1, inplace=True)
+emptyColumns = [col for col in df.columns if df[col].isnull().all()]
+df.drop(emptyColumns,
+        axis=1,
+        inplace=True)
 
 for partido in partidos:
 	df[partido] = df[partido].str.replace(',', '.')
 	df[partido] = df[partido].astype(float)
 
-# drop empty rows
 df.dropna(
     axis=0,
-    how='any',
-    thresh=None,
-    subset=None,
     inplace=True
 )
 
